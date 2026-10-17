@@ -1,0 +1,39 @@
+# Module 18, Lab: "docker compose config" accepts this file, "docker stack deploy" rejects it,
+# and even once it deploys, it is not how you run taskr on a swarm. Four things are wrong.
+# Deploy with:  docker stack deploy --detach=false -c stack.yaml taskr
+version: "3.9"
+
+services:
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: taskr
+      POSTGRES_PASSWORD: taskr-lab
+      POSTGRES_DB: taskr
+    volumes:
+      - taskr-db:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "taskr", "-d", "taskr"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    deploy:
+      replicas: 1
+
+  taskr:
+    build:
+      context: ../../taskr-v2
+      args:
+        TASKR_VERSION: 2.2.0
+    environment:
+      DATABASE_URL: postgresql://taskr:taskr-lab@db:5432/taskr
+    ports:
+      - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    deploy:
+      replicas: 3
+
+volumes:
+  taskr-db:

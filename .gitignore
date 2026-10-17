@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Virtual environments
+.venv/
+venv/
+
+# Files you create during the course that must never be committed
+.env
+.env.*
+cosign.key
+*.tar.gz
+*.cdx.json
+
+# Files you write yourself (Dockerfiles, compose.yaml, stack.yaml) are tracked on purpose,
+# so you can keep your work in your own fork.

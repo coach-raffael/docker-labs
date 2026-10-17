@@ -1,0 +1,38 @@
+# Module 15, Lab: this Compose project works, but it is not safe to run. Audit it for
+# privilege, exposure and secret problems, then harden the image and the stack (taskr 2.2).
+# taskr needs the image you build from your own Dockerfile in taskr-v2 (Modules 09, 10 and 13).
+name: taskr
+
+services:
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: taskr
+      POSTGRES_PASSWORD: taskr-lab
+      POSTGRES_DB: taskr
+    ports:
+      - "0.0.0.0:5432:5432"
+    volumes:
+      - taskr-db:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "taskr", "-d", "taskr"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  taskr:
+    build:
+      context: ../../taskr-v2
+      args:
+        TASKR_VERSION: 2.2.0
+    user: "0"
+    environment:
+      DATABASE_URL: postgresql://taskr:taskr-lab@db:5432/taskr
+    ports:
+      - "127.0.0.1:8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  taskr-db:

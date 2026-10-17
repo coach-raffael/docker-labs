@@ -1,0 +1,29 @@
+# Module 12, Lab: this Compose project has three mistakes. Find them with
+# "docker compose config", "docker compose ps" and "docker compose logs", fix them and
+# explain each one in a sentence. Then make the stack reliable (Part B of the lab).
+# taskr needs the image you built from your own Dockerfile in taskr-v2 (Modules 09 and 10).
+name: taskr
+
+services:
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: taskr
+      POSTGRES_PASSWORD: taskr-lab
+      POSTGRES_DB: taskr
+    ports:
+      - "5432:5432"
+    volumes:
+      - taskr-db:/var/lib/postgresql/data
+
+  taskr:
+    build: ../../taskr-v2
+    environment:
+      DATABASE_URL: postgresql://taskr:taskr-lab@postgres:5432/taskr
+    ports:
+      - "127.0.0.1:8080:8080"
+    depends_on:
+      - db
+
+volumes:
+  taskr-db:
