@@ -17,7 +17,7 @@ else
 fi
 
 history="$(docker history --format '{{.CreatedBy}}' taskr:1.0-lab 2>/dev/null || true)"
-pip_line="$(printf '%s\n' "$history" | grep -n 'pip install' | head -n 1 | cut -d: -f1)"
+pip_line="$(printf '%s\n' "$history" | grep -nE 'pip3? install' | head -n 1 | cut -d: -f1)"
 code_line="$(printf '%s\n' "$history" | grep -n 'COPY' | head -n 1 | cut -d: -f1)"
 if [ -n "$pip_line" ] && [ -n "$code_line" ] && [ "$pip_line" -gt "$code_line" ]; then
   ok "docker history shows the dependencies in their own layer before the code"
