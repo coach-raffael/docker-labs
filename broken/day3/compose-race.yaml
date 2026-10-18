@@ -1,6 +1,7 @@
 # Module 11, the start-up race: taskr starts before PostgreSQL accepts connections.
+# slow-init.sql makes the first start of the database slow, like a large database would.
 # taskr needs the image you built from your own Dockerfile in taskr-v2 (Modules 09 and 10).
-# Start from this directory:  docker compose -f compose-race.yaml up --build
+# Start from this directory:  docker compose -f compose-race.yaml up -d --build
 # Your job: make taskr wait for a healthy database, then clean up with "docker compose -f compose-race.yaml down -v".
 name: taskr-race
 
@@ -13,13 +14,12 @@ services:
       POSTGRES_DB: taskr
     volumes:
       - race-db:/var/lib/postgresql
+      - ./slow-init.sql:/docker-entrypoint-initdb.d/slow-init.sql:ro
 
   taskr:
     build: ../../taskr-v2
     environment:
       DATABASE_URL: postgresql://taskr:taskr-lab@db:5432/taskr
-    ports:
-      - "127.0.0.1:8080:8080"
     depends_on:
       - db
 
