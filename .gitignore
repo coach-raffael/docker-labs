@@ -11,6 +11,8 @@ venv/
 .env
 .env.*
 cosign.key
+*.key
+scan.json
 *.tar.gz
 *.cdx.json
 

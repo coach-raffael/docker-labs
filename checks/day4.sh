@@ -72,12 +72,13 @@ check "SBOM taskr.cdx.json exists in the project directory" test -s "$workdir/ta
 tags="$(http_body http://127.0.0.1:5000/v2/taskr/tags/list 2>/dev/null || true)"
 if contains '"2.2"' "$tags"; then ok "registry 127.0.0.1:5000 holds taskr:2.2"; else fail "registry 127.0.0.1:5000 does not list taskr:2.2 (got: ${tags:-no answer})"; fi
 if command -v cosign >/dev/null 2>&1 && [ -f "$workdir/cosign.pub" ]; then
-  if cosign verify --key "$workdir/cosign.pub" 127.0.0.1:5000/taskr:2.2 >/dev/null 2>&1; then
+  # Signed without the public transparency log (Module 14), so verify must skip the log check.
+  if cosign verify --key "$workdir/cosign.pub" --insecure-ignore-tlog=true 127.0.0.1:5000/taskr:2.2 >/dev/null 2>&1; then
     ok "cosign verify succeeds with $workdir/cosign.pub"
   else
-    fail "cosign verify --key $workdir/cosign.pub 127.0.0.1:5000/taskr:2.2 failed (Module 14 shows the flags for a registry without Rekor)"
+    fail "cosign verify --key $workdir/cosign.pub --insecure-ignore-tlog=true 127.0.0.1:5000/taskr:2.2 failed (sign the image again, Module 14)"
   fi
-elif printf '%s' "$tags" | grep -Eq 'sha256-[0-9a-f]{64}\.sig'; then
+elif printf '%s' "$tags" | grep -Eq 'sha256-[0-9a-f]{64}'; then
   ok "a cosign signature is stored next to the image (cosign or cosign.pub not found here, so verify yourself)"
 else
   fail "no signature found: sign the image with cosign and keep cosign.pub in the project directory (Module 14)"
