@@ -10,6 +10,7 @@ venv/
 # Files you create during the course that must never be committed
 .env
 .env.*
+!.env.example
 cosign.key
 *.key
 scan.json

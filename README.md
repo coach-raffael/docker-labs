@@ -13,7 +13,7 @@ the deliberately broken files, the swarm helper and the acceptance checks for th
 
 ```
 docker-labs
-├── taskr-v1        # Day 1 (Modules 02-04): taskr 1.0, tasks in memory; you write the Dockerfile
+├── taskr-v1        # Day 1 (Modules 00-04): taskr 1.0, tasks in memory; you write the Dockerfile
 ├── taskr-v2        # Days 2-5 (Modules 06-18): taskr 2.0, PostgreSQL backend, DATABASE_URL_FILE
 ├── taskr-broken    # Day 2 (Module 07): source of the reference image taskr:broken, for your diagnosis
 ├── broken
